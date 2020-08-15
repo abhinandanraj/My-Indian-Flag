@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Indian Flag</title>
+        <style>
+           body {
+    margin:0;
+    padding:0;
+    box-sizing:border-box ;
+}
+.con{
+    position:absolute ;
+    top:55%;
+    left:52.5%;
+    transform:translate(-50%,-50%);
+}
+.danda{
+    height:400px;
+    width:12px;
+    position:relative ;
+    left:-60px;
+    background-color:brown;
+}
+.dandatop{
+    content:'';
+    height:20px;
+    width:20px;
+    border-radius:50%;
+    position:absolute ;
+    top:-15px;
+    left:-4px;
+    background-color:#448aff;
+}
+.b1 , .b2{
+     background-color:gray;
+     height:40px;
+     width:90px;
+     position:absolute ;
+     left:-100px;
+}
+.b1{
+    border:2px solid #212121;
+}
+.b2{
+    margin-top:42px;
+    width:140px;
+    left:-125px;
+    border:2px solid #212121;
+}
+ul{
+    display:flex;
+    position:absolute ;
+}
+ul li{
+    height:135px;
+    width:5px;
+    background-color:#fff;
+    list-style-type:none;
+    position:relative ;
+    top:-400px;
+    left:-88px;
+    animation:animate 2s linear infinite;   
+}
+li:before{
+    content:'';
+    position:absolute ;
+    height:45px;
+    width:100%;
+    top:0;
+    left:0;
+    background-color:orange;
+}
+li:after{
+    content:'';
+    position:absolute ;
+    height:45px;
+    width:100%;
+    bottom:0;
+    left:0;
+    background-color:green;
+}
+.flagcircle{
+    position:relative ;
+    transform:scale(.5);
+    top:-368px; /*Without animation normal position is -367.5px */
+    left:20px;
+    animation:flag 2s linear infinite;
+    animation-delay:2.5s;
+}
+@keyframes animate{
+    0%,100%{
+        transform:translateY(0px);
+    }
+    50%{
+        transform:translateY(5px);
+    }
+}
+@keyframes flag{
+    0%,100%{
+        transform:translateY(0px) scale(.5);
+    }
+    50%{
+        transform:translateY(5px) scale(.5);
+    }
+} 
+        </style>
+    </head>
+    <body>
+        <div class="con">
+    <div class="danda">
+        <div class="dandatop"></div>
+    </div>
+    <div class="base">
+        <div class="b1"></div>
+        <div class="b2"></div>
+    </div>
+    
+    <div class="flag">
+        <ul></ul>
+         
+        <div class="flagcircle">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-21 -21 42 42" width="100" height="100">
+<path fill="#008" fill-rule="evenodd" d="M0-20a20,20 0 0 0 0,40a20,20 0 0 0 0-40zM0-17.5 a17.5,17.5 0 0 0 0,35a17.5,17.5 0 0 0 0-35z"></path>
+<circle r="3.5" fill="#008"></circle>
+<g id="d">
+<g id="c">
+<g id="b">
+<g id="a">
+<circle r="0.875" fill="#008" transform="rotate(7.5) translate(17.5)"></circle>
+<path fill="#008" d="M 0,17.5 0.6,7 C 0.6,7 0,2 0,2 0,2 -0.6,7 -0.6,7 L 0,17.5 z"></path>
+</g>
+<use xlink:href="#a" transform="rotate(15)"></use>
+</g>
+<use xlink:href="#b" transform="rotate(30)"></use>
+</g>
+<use xlink:href="#c" transform="rotate(60)"></use>
+</g>
+<use xlink:href="#d" transform="rotate(120)"></use>
+<use xlink:href="#d" transform="rotate(-120)"></use>
+</svg>
+</div>
+
+    </div>
+    
+        </div>
+        <canvas id="confetti"></canvas>
+        <script>
+  let ul = document.querySelector("ul");
+      for(var i = 0; i < 48 ; i++){
+    let parts = document.createElement('li')
+    parts.style.animationDelay = i/10 + "s" ;
+    ul.appendChild(parts)
+      }
+    
+let canvas = document.getElementById("confetti")
+
+canvas.height = 1080;
+canvas.width = 1920;
+let ctx = canvas.getContext("2d")
+pieces = []
+let numberofpieces = 50;
+let lastupdatetime = Date.now()
+
+function randomcolor(){
+  let colors = ["#f00" , "#ed5650" , "#448aff" , "orange" , "#fff685"]
+    return colors[Math.floor(Math.random() * colors.length)]
+    
+}
+function update(){
+   let now = Date.now() ;
+   let dt = now - lastupdatetime ;
+    for(let i = pieces.length - 1; i>=0; i--){
+    let p = pieces[i]
+    if(p.y > canvas.height){
+        pieces.splice(i,1)
+        continue;
+    }
+    p.y += p.gravity * dt;
+    p.rotation += p.rotationspeed * dt;
+    }
+    while(pieces.length < numberofpieces ){
+    pieces.push(new piece(Math.random() * canvas.width , -20))
+}
+    lastupdatetime = now
+    setTimeout(update,1);
+    
+}
+function draw(){
+ctx.clearRect(0,0, canvas.width , canvas.height)
+   pieces.forEach(function(p){
+       ctx.save();
+       ctx.fillStyle = p.color ;
+    ctx.translate(p.x + p.size/2 , p.y + p.size/2)
+       ctx.rotate(p.rotation)
+     ctx.fillRect(-p.size/2 , -p.size/2 , p.size , p.size)
+       ctx.restore();
+   })
+    requestAnimationFrame(draw)
+}
+function piece(x , y){
+    this.x = x ;
+    this.y = y ;
+    this.size = (Math.random() * 0.5 + 0.75) * 15 ;
+    this.gravity = (Math.random() * 0.5 + 0.75) * 0.1;
+    this.rotation = (Math.PI * 2) * Math.random() ;
+    this.rotationspeed = (Math.PI * 2) * Math.random() * 0.0001;
+    this.color = randomcolor()
+}
+
+while(pieces.length < numberofpieces ){
+    pieces.push(new piece(Math.random() * canvas.width , Math.random() * canvas.height))
+}
+draw();
+update();
+let song = new Audio();
+song.src = "https://d6cp9b00-a.akamaihd.net/downloads/ringtones/files/mp3/saare-jaha-se-achchha-5041.mp3" ;
+window.addEventListener('click',() => {
+    song.play();
+    song.volume = 0.5
+})
+    
+alert("Touch anywhere on the screen to listen to the tune of our patriotic song")
+        </script>
+    </body>
+</html>
